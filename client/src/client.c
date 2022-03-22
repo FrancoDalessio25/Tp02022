@@ -1,5 +1,5 @@
 #include "client.h"
-#include<readline/readline.h>
+
 int main(void)
 {
 	/*---------------------------------------------------PARTE 2-------------------------------------------------------------*/
@@ -107,7 +107,7 @@ void paquete(int conexion)
 	t_paquete* paquete;
 	while(leido!='\0'){
 		tamanioLeido = strlen(leido) + 1;
-		agregar_a_paquete(paquete,(void*)leido,tamanioLeido)
+		agregar_a_paquete(paquete,(void*)leido,tamanioLeido);
         free(leido);
 	}
 	enviar_paquete(paquete, conexion);
