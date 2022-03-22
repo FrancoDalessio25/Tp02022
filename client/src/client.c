@@ -25,7 +25,7 @@ int main(void)
 	config = iniciar_config();
 
 	// Usando el config creado previamente, leemos los valores del config y los 
-	// dejamos en las variables 'ip', 'puerto' y 'valor hola'
+	// dejamos en las variables 'ip', 'puerto' y 'valor '
 
 	// Loggeamos el valor de config
 
