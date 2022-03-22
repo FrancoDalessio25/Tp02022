@@ -31,7 +31,7 @@ int crear_conexion(char *ip, char* puerto)
 	// Ahora vamos a crear el socket.
 	int socket_cliente = 0;
 
-	 socket_cliente = socket(server_info->ai_family, 
+	socket_cliente = socket(server_info->ai_family, 
                     server_info->ai_socktype,
                     server_info->ai_protocol);
 

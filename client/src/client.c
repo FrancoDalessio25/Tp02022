@@ -108,11 +108,13 @@ void paquete(int conexion)
 	while(leido!='\0'){
 		tamanioLeido = strlen(leido) + 1;
 		agregar_a_paquete(paquete,(void*)leido,tamanioLeido)
-         free(leido);
+        free(leido);
 	}
 	enviar_paquete(paquete, conexion);
 
 	eliminar_paquete(paquete);
+
+	free(leido);
 	// Leemos y esta vez agregamos las lineas al paquete
 
 
