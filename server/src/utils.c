@@ -2,6 +2,7 @@
 
 int iniciar_servidor(void)
 {
+	printf("aca 1");
 	// Quitar esta línea cuando hayamos terminado de implementar la funcion
 	int socket_servidor;
 
@@ -11,11 +12,12 @@ int iniciar_servidor(void)
 	hints.ai_family = AF_UNSPEC;
 	hints.ai_socktype = SOCK_STREAM;
 	hints.ai_flags = AI_PASSIVE;
-
+	printf("aca 2");
 	getaddrinfo(IP, PUERTO, &hints, &servinfo);
 
 	// Creamos el socket de escucha del servidor
 	socket_servidor = socket(p->ai_family, p->ai_socktype, p->ai_protocol);
+	printf("aca 3");
 	// Asociamos el socket a un puerto
 	bind(socket_servidor, servinfo->ai_addr, servinfo->ai_addrlen);
 	// Escuchamos las conexiones entrantes
@@ -26,14 +28,26 @@ int iniciar_servidor(void)
 	return socket_servidor;
 }
 
+void handshake(int socket_cliente) {
+	uint32_t handshake;
+	uint32_t resultOk = 0;
+	uint32_t resultError = -1;
+
+	recv(socket_cliente, &handshake, sizeof(uint32_t), MSG_WAITALL);
+	if(handshake == 1)
+	   send(socket_cliente, &resultOk, sizeof(uint32_t), NULL);
+	else
+	   send(socket_cliente, &resultError, sizeof(uint32_t), NULL);
+}
+
 int esperar_cliente(int socket_servidor)
 {
-	// Quitar esta línea cuando hayamos terminado de implementar la funcion
-
+	struct sockaddr_in dir_cliente;
+	int tam_direccion = sizeof(struct sockaddr_in);
 
 	// Aceptamos un nuevo cliente
-	int socket_cliente;
-	socket_cliente = accept(socket_servidor, NULL, NULL);
+	int socket_cliente = accept(socket_servidor,  (struct sockaddr *) &dir_cliente, &tam_direccion);
+
 	log_info(logger, "Se conecto un cliente!");
 
 	return socket_cliente;
@@ -42,7 +56,7 @@ int esperar_cliente(int socket_servidor)
 int recibir_operacion(int socket_cliente)
 {
 	int cod_op;
-	if(recv(socket_cliente, &cod_op, sizeof(int), MSG_WAITALL) > 0)
+	if(recv(socket_cliente, &cod_op, sizeof(int), MSG_WAITALL) != 0)
 		return cod_op;
 	else
 	{
@@ -90,4 +104,6 @@ t_list* recibir_paquete(int socket_cliente)
 	}
 	free(buffer);
 	return valores;
+	return NULL;
 }
+

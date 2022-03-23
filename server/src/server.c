@@ -31,5 +31,5 @@ int main(void) {
 }
 
 void iterator(char* value) {
-	log_info(logger,"%s", value);
+	printf("%s\n", value);
 }

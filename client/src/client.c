@@ -18,7 +18,7 @@ int main(void)
 
 	// Usando el logger creado previamente
 	// Escribi: "Hola! Soy un log "
-    log_info(logger,"Soy un log");
+    log_info(logger,"Hola! Soy un log");
 
 	/* ---------------- ARCHIVOS DE CONFIGURACION ---------------- */
 
@@ -45,7 +45,7 @@ int main(void)
 	conexion = crear_conexion(ip, puerto);
 
 	// Enviamos al servidor el valor de CLAVE como mensaje
-	enviar_mensaje("Aguante Banfield",conexion);
+	enviar_mensaje(valor,conexion);
 	// Armamos y enviamos el paquete
 	paquete(conexion);
 
@@ -58,9 +58,9 @@ int main(void)
 t_log* iniciar_logger(void)
 {
 	t_log* nuevo_logger;
-	if((nuevo_logger = log_create("tp0.log","TP0",1,LOG_LEVEL_INFO)) == NULL){
+	if((nuevo_logger = log_create("/home/utnso/tp0/tp0.log","tp0",true,LOG_LEVEL_INFO)) == NULL){
 		printf("No se puede loggear");
-		exit(1);
+		abort();
 	}
 	return nuevo_logger;
 }
@@ -70,7 +70,7 @@ t_config* iniciar_config(void)
 	t_config* nuevo_config;
 	
 
-	if((nuevo_config = config_create("tp0.config")) == NULL){
+	if((nuevo_config = config_create("/home/utnso/tp0/tp0.config")) == NULL){
 
 		perror("No se pudo crear la config!\n");
 		abort();
@@ -85,11 +85,18 @@ void leer_consola(t_log* logger)
 	char* leido;
 
 	// La primera te la dejo de yapa
-	leido = readline("> ");
-	while(leido != '\0'){
-		log_info(logger,leido);
+	while (!string_is_empty(leido = readline(">"))) {
+
+		if (leido == NULL) {
+
+			perror("No se puede leer esa linea");
+			abort();
+		}
+
+		log_info(logger, leido);
 		free(leido);
 	}
+
 	free(leido);
 
 	// El resto, las vamos leyendo y logueando hasta recibir un string vacío
@@ -103,17 +110,30 @@ void paquete(int conexion)
 {
 	// Ahora toca lo divertido!
 	char* leido;
-	int tamanioLeido;
 	t_paquete* paquete;
-	while(leido!='\0'){
-		tamanioLeido = strlen(leido) + 1;
-		agregar_a_paquete(paquete,(void*)leido,tamanioLeido);
-        free(leido);
-	}
-	enviar_paquete(paquete, conexion);
+	t_log* logger;
+	int tamanio;
 
-	eliminar_paquete(paquete);
+	paquete = crear_super_paquete();
 
+	while (!string_is_empty(leido = readline(">"))) {
+
+			if (leido == NULL) {
+
+				perror("No se puede leer esa linea");
+				abort();
+			}
+
+			tamanio = strlen(leido) + 1;
+			agregar_a_paquete(paquete, (void*) leido, tamanio);
+			free(leido);
+		}
+
+		free(leido);
+
+		enviar_paquete(paquete, conexion);
+
+		eliminar_paquete(paquete);
 	free(leido);
 	// Leemos y esta vez agregamos las lineas al paquete
 
@@ -126,7 +146,9 @@ void terminar_programa(int conexion, t_log* logger, t_config* config)
 {
 	/* Y por ultimo, hay que liberar lo que utilizamos (conexion, log y config) 
 	  con las funciones de las commons y del TP mencionadas en el enunciado */
+	close(conexion);
 	log_destroy(logger);
 	config_destroy(config);
-	liberar_conexion(conexion);
+
 }
+
