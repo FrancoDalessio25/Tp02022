@@ -70,7 +70,7 @@ t_config* iniciar_config(void)
 	t_config* nuevo_config;
 	
 
-	if((nuevo_config = config_create("/home/utnso/tp0/tp0.config")) == NULL){
+	if((nuevo_config = config_create("/home/utnso/tp0/client/cliente.config")) == NULL){
 
 		perror("No se pudo crear la config!\n");
 		abort();
@@ -80,6 +80,7 @@ t_config* iniciar_config(void)
 	return nuevo_config;
 }
 
+/*
 void leer_consola(t_log* logger)
 {
 	char* leido;
@@ -105,7 +106,26 @@ void leer_consola(t_log* logger)
 	// ¡No te olvides de liberar las lineas antes de regresar!
 
 }
+*/ // LEER CONSOLA VIEJO
 
+
+void leer_consola(t_log* logger)
+{
+    char* leido;
+
+    leido = readline("> ");
+    log_info(logger, leido);
+
+    while(strcmp(leido,"") != 0 )
+    {
+        leido = readline("> ");
+        log_info(logger, leido);
+    }
+
+    free(leido);
+}
+
+/*
 void paquete(int conexion)
 {
 	// Ahora toca lo divertido!
@@ -114,7 +134,7 @@ void paquete(int conexion)
 	t_log* logger;
 	int tamanio;
 
-	paquete = crear_super_paquete();
+
 
 	while (!string_is_empty(leido = readline(">"))) {
 
@@ -140,6 +160,29 @@ void paquete(int conexion)
 
 	// ¡No te olvides de liberar las líneas y el paquete antes de regresar!
 	
+}
+*/ // PAQUETE VIEJO
+
+
+void paquete(int conexion)
+{
+    char* leido = readline("> ");
+    t_paquete* paquete;
+    int tamanio = strlen(leido) + 1;
+
+    paquete = crear_paquete();
+
+    while(strcmp(leido,"") != 0)
+    {
+        agregar_a_paquete(paquete , (void*)leido , tamanio);
+        leido = readline("> ");
+    }
+
+    enviar_paquete(paquete , conexion);
+
+    eliminar_paquete(paquete);
+
+    liberar_conexion(conexion);
 }
 
 void terminar_programa(int conexion, t_log* logger, t_config* config)

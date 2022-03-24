@@ -1,9 +1,11 @@
 #include "server.h"
 
 int main(void) {
+	printf("aca 1");
 	logger = log_create("log.log", "Servidor", 1, LOG_LEVEL_DEBUG);
-
+	printf("aca 2");
 	int server_fd = iniciar_servidor();
+	printf("aca 3");
 	log_info(logger, "Servidor listo para recibir al cliente");
 	int cliente_fd = esperar_cliente(server_fd);
 

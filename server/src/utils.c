@@ -16,7 +16,7 @@ int iniciar_servidor(void)
 	getaddrinfo(IP, PUERTO, &hints, &servinfo);
 
 	// Creamos el socket de escucha del servidor
-	socket_servidor = socket(p->ai_family, p->ai_socktype, p->ai_protocol);
+	socket_servidor = socket(servinfo->ai_family, servinfo->ai_socktype, servinfo->ai_protocol);
 	printf("aca 3");
 	// Asociamos el socket a un puerto
 	bind(socket_servidor, servinfo->ai_addr, servinfo->ai_addrlen);
@@ -24,6 +24,7 @@ int iniciar_servidor(void)
 	listen(socket_servidor, SOMAXCONN);
 	freeaddrinfo(servinfo);
 	log_trace(logger, "Listo para escuchar a mi cliente");
+	printf("aca 4");
 
 	return socket_servidor;
 }
@@ -56,7 +57,7 @@ int esperar_cliente(int socket_servidor)
 int recibir_operacion(int socket_cliente)
 {
 	int cod_op;
-	if(recv(socket_cliente, &cod_op, sizeof(int), MSG_WAITALL) != 0)
+	if(recv(socket_cliente, &cod_op, sizeof(int), MSG_WAITALL) > 0)
 		return cod_op;
 	else
 	{
